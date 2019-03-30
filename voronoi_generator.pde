@@ -72,7 +72,7 @@ boolean fast = true;                                       // Much faster if thi
 boolean noise = false;                                     // Turn noise off/on
 
 void setup() {
-  size(500, 500);
+  size(500, 600);
   background(0,0,0);
   points.add(new PVector(mouseX, mouseY));
 }
@@ -163,7 +163,7 @@ void draw() {
           if (side > 0) {
             float slope = (t1.v2.x - t1.v1.x)/(t1.v2.y - t1.v1.y);
             slope = -1/slope;
-            line((510 - c.y) * slope + c.x, 510, c.x, c.y);
+            line((height + 10 - c.y) * slope + c.x, height + 10, c.x, c.y);
           }
           else if (side < 0) {
             float slope = (t1.v2.x - t1.v1.x)/(t1.v2.y - t1.v1.y);
@@ -203,7 +203,7 @@ void draw() {
           if (side > 0) {
             float slope = (t1.v2.x - t1.v3.x)/(t1.v2.y - t1.v3.y);
             slope = -1/slope;
-            line((510 - c.y) * slope + c.x, 510, c.x, c.y);
+            line((height + 10 - c.y) * slope + c.x, height + 10, c.x, c.y);
           }
           else if (side < 0) {
             float slope = (t1.v2.x - t1.v3.x)/(t1.v2.y - t1.v3.y);
@@ -243,7 +243,7 @@ void draw() {
           if (side > 0) {
             float slope = (t1.v3.x - t1.v1.x)/(t1.v3.y - t1.v1.y);
             slope = -1/slope;
-            line((510 - c.y) * slope + c.x, 510, c.x, c.y);
+            line((height + 10 - c.y) * slope + c.x, height + 10, c.x, c.y);
           }
           else if (side < 0) {
             float slope = (t1.v3.x - t1.v1.x)/(t1.v3.y - t1.v1.y);
@@ -267,8 +267,8 @@ void draw() {
     }
     //Slow method
     else {
-      for (int x = 0; x < 500; x++) {
-      for (int y = 0; y < 500; y++) {
+      for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
         for (int i = 0; i < points.size(); i++) {
           PVector one = points.get(i);
           float d1 = dist(x, y, one.x, one.y);
