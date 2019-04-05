@@ -136,6 +136,9 @@ void draw() {
   
   //Voronoi generation from delaunay triangles
   if (voronoi) {
+    for(PVector p : points) {
+    point(p.x, p.y);
+    }
     //Fast method
     if (fast) {
       for (int i = 0; i < triangles.size(); i++) {
