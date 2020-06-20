@@ -70,20 +70,49 @@ boolean circles = false;                                   // Turn circumcircles
 boolean voronoi = false;                                   // Switch between voronoi/delaunay
 boolean fast = true;                                       // Much faster if this is turned on
 boolean noise = false;                                     // Turn noise off/on
+boolean addPointOnCursor = true;
+
+Checkbox c1;
+Checkbox c2;
+Checkbox c3;
+Checkbox c4;
+Checkbox c5;
+Button b1;
+int numberOfPointsAdded = 0;
+//boolean mouseWentOutOfBounds = false;
+//boolean mouseWentInBounds = false;
 
 void setup() {
-  size(500, 600);
+  size(1500, 900);
   background(0,0,0);
   points.add(new PVector(mouseX, mouseY));
+  
+  c1 = new Checkbox(1375, 150, 40, 40);
+  c2 = new Checkbox(1375, 250, 40, 40);
+  c3 = new Checkbox(1375, 350, 40, 40);
+  c4 = new Checkbox(1375, 450, 40, 40);
+  c5 = new Checkbox(1375, 550, 40, 40);
+  b1 = new Button(1175, 650, 240, 80);
 }
 
 void draw() {
   background(0, 0, 0);
+  
   noFill();
   stroke(255, 255, 255);
   strokeWeight(5);
-  points.remove(points.size() - 1);
-  points.add(new PVector(mouseX, mouseY));
+  
+  if (addPointOnCursor) {
+    if (points.size() > numberOfPointsAdded) {
+      points.remove(points.size() - 1);
+    }
+    points.add(new PVector(mouseX, mouseY));
+  }
+  else {
+    while (points.size() > numberOfPointsAdded) {
+      points.remove(points.size() - 1);
+    }
+  }
   for (int i = 0; i < points.size(); i++) {
     PVector v = points.get(i);
     float n = pow(noise(i), 0.5)*2;
@@ -116,10 +145,12 @@ void draw() {
           PVector c = circumcenter(ip, jp, kp);
           if (!voronoi) {
             stroke(255, 255, 255);
+            //stroke(255, 0, 0);
             line(ip.x, ip.y, jp.x, jp.y);
             line(ip.x, ip.y, kp.x, kp.y);
             line(kp.x, kp.y, jp.x, jp.y);
           }
+          //can remove
           else {
             triangles.add(new Triangle(ip, jp, kp));
           }
@@ -135,9 +166,10 @@ void draw() {
   stroke(255, 255, 255);
   
   //Voronoi generation from delaunay triangles
-  if (voronoi) {
+  if (voronoi) {// || true) {
     for(PVector p : points) {
-    point(p.x, p.y);
+      //can remove
+      point(p.x, p.y);
     }
     //Fast method
     if (fast) {
@@ -299,6 +331,52 @@ void draw() {
     }
   }
   triangles.clear();
+  
+  //Interface
+  noStroke();
+  fill(100, 100, 100);
+  rect(1100, 0, width, height);
+  
+  fill(255, 255, 255);
+  textSize(30);
+  text("Voronoi?", 1175, 180);
+  fill(0, 0, 0);
+  c1.update();
+  c1.display();
+  
+  fill(255, 255, 255);
+  textSize(30);
+  text("Circles?", 1175, 280);
+  fill(0, 0, 0);
+  c2.update();
+  c2.display();
+  
+  fill(255, 255, 255);
+  textSize(30);
+  text("Noise?", 1175, 380);
+  fill(0, 0, 0);
+  c3.update();
+  c3.display();
+  
+  fill(255, 255, 255);
+  textSize(30);
+  text("Slow Draw?", 1175, 480);
+  fill(0, 0, 0);
+  c4.update();
+  c4.display();
+  
+  fill(255, 255, 255);
+  textSize(30);
+  text("Cursor Point?", 1175, 580);
+  fill(0, 0, 0);
+  c5.update();
+  c5.display();
+  
+  b1.update();
+  b1.display();
+  fill(0, 0, 0);
+  textSize(30);
+  text("Clear Points", 1205, 700);
 }
 
 //Finds third point of a triangle in the delaunay triangulation, given two points and one point it will NOT return
@@ -332,36 +410,60 @@ PVector ThirdPoint(PVector a, PVector b, PVector no) {
 
 //Callback when the user clicks at (x, y)
 void mousePressed() {
-  //Slow method blows up without this
-  if (!fast) {
-    boolean canAdd = true;
-    for(int i = 0; i < points.size() - 1; i++) {
-      PVector v = points.get(i);
-      if (dist(mouseX, mouseY, v.x, v.y) < 1) {
-        canAdd = false;
-        break;
+  if (mouseX < 1100 && mouseY < height) {
+    //Slow method blows up without this
+    if (!fast) {
+      boolean canAdd = true;
+      for(int i = 0; i < points.size() - 1; i++) {
+        PVector v = points.get(i);
+        if (dist(mouseX, mouseY, v.x, v.y) < 1) {
+          canAdd = false;
+          break;
+        }
+      }
+      if (canAdd) {
+        points.add(new PVector(mouseX, mouseY));
+        numberOfPointsAdded++;
       }
     }
-    if (canAdd) {
+    else {
       points.add(new PVector(mouseX, mouseY));
+      numberOfPointsAdded++;
     }
   }
-  else {
-    points.add(new PVector(mouseX, mouseY));
+}
+
+void mouseReleased() {
+  c1.tryClick();
+  c2.tryClick();
+  c3.tryClick();
+  c4.tryClick();
+  c5.tryClick();
+  
+  voronoi = c1.pressed;
+  circles = c2.pressed;
+  noise = c3.pressed;
+  fast = !c4.pressed;
+  addPointOnCursor = c5.pressed;
+  
+  b1.tryClick();
+  if (b1.pressed) {
+    points.clear();
+    numberOfPointsAdded = 0;
   }
 }
 
 void keyPressed() {
-  if (keyCode == 67) {
+  if (keyCode == 67) { //c
     circles = !circles;
   }
-  else if (keyCode == 86) {
+  else if (keyCode == 86) { //v
     voronoi = !voronoi;
   }
-  else if (keyCode == 70) {
+  else if (keyCode == 70) { //f
     fast = !fast;
   }
-  else if (keyCode == 78) {
+  else if (keyCode == 78) { //n
     noise = !noise;
   }
 }
