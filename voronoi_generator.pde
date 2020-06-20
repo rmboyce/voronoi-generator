@@ -453,21 +453,6 @@ void mouseReleased() {
   }
 }
 
-void keyPressed() {
-  if (keyCode == 67) { //c
-    circles = !circles;
-  }
-  else if (keyCode == 86) { //v
-    voronoi = !voronoi;
-  }
-  else if (keyCode == 70) { //f
-    fast = !fast;
-  }
-  else if (keyCode == 78) { //n
-    noise = !noise;
-  }
-}
-
 //Triangle class stores three PVectors
 class Triangle {
   public PVector v1;
