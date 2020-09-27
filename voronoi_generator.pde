@@ -166,7 +166,7 @@ void draw() {
   stroke(255, 255, 255);
   
   //Voronoi generation from delaunay triangles
-  if (voronoi) {// || true) {
+  if (voronoi) {
     for(PVector p : points) {
       //can remove
       point(p.x, p.y);
