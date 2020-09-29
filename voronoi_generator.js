@@ -52,7 +52,7 @@ function circumcenter(a, b, c)
   let numx = det(ay, ax * ax + ay * ay, by, bx * bx + by * by); 
   let numy = det(ax, ax * ax + ay * ay, bx, bx * bx + by * by); 
  
-	let ccx = cx - numx / denom; 
+  let ccx = cx - numx / denom; 
   let ccy = cy + numy / denom; 
  
   return createVector(ccx, ccy); 
@@ -65,12 +65,12 @@ function det(m00, m01, m10, m11)
 }
 
 var points = new Array(0);      // User-selected points
-var triangles = new Array(0); // Triangles
-var circles = false;                                   // Turn circumcircles off/on
-var voronoi = false;                                   // Switch between voronoi/delaunay
-var fast = true;                                       // Much faster if this is turned on
-var noiseVal = false;                                     // Turn noise off/on
-var addPointOnCursor = true;
+var triangles = new Array(0);   // Triangles
+var circles = false;            // Turn circumcircles off/on
+var voronoi = false;            // Switch between voronoi/delaunay
+var fast = true;                // Much faster if this is turned on
+var noiseVal = false;           // Turn noise off/on
+var addPointOnCursor = true;    // Add point on the cursor
 
 var c1;
 var c2;
@@ -79,8 +79,6 @@ var c4;
 var c5;
 var b1;
 var numberOfPointsAdded = 0;
-//boolean mouseWentOutOfBounds = false;
-//boolean mouseWentInBounds = false;
 
 function setup() {
   createCanvas(750, 450);
@@ -168,7 +166,7 @@ function draw() {
   //Voronoi generation from delaunay triangles
   if (voronoi) {
     for(let i = 0; i < points.length; i++) {
-			let p = points[i];
+      let p = points[i];
       //can remove
       point(p.x, p.y);
     }
@@ -304,31 +302,31 @@ function draw() {
     //Slow method
     else {
       for (let x = 0; x < width; x++) {
-				for (let y = 0; y < height; y++) {
-					for (let i = 0; i < points.length; i++) {
-						let one = points[i];
-						let d1 = dist(x, y, one.x, one.y);
-						let minD2 = 1000000;
-						let minMouse = 1000000;
-						if (dist(mouseX, mouseY, one.x, one.y) < minMouse) {
-							minMouse = dist(mouseX, mouseY, one.x, one.y);
-						}
-						for (let j = 0; j < points.length; j++) {
-							if (j == i) {
-								continue;
-							}
-							let two = points[j];
-							let d2 = dist(x, y, two.x, two.y);
-							if (d2 < minD2) {
-								minD2 = d2;
-							}
-						}
-						if (abs(d1 - minD2) < min(0.5, minMouse/80)) {
-							point(x, y);
-						}
-					}
-				}
-			}
+        for (let y = 0; y < height; y++) {
+          for (let i = 0; i < points.length; i++) {
+            let one = points[i];
+            let d1 = dist(x, y, one.x, one.y);
+            let minD2 = 1000000;
+            let minMouse = 1000000;
+            if (dist(mouseX, mouseY, one.x, one.y) < minMouse) {
+              minMouse = dist(mouseX, mouseY, one.x, one.y);
+            }
+            for (let j = 0; j < points.length; j++) {
+              if (j == i) {
+                continue;
+              }
+              let two = points[j];
+              let d2 = dist(x, y, two.x, two.y);
+              if (d2 < minD2) {
+                minD2 = d2;
+              }
+            }
+            if (abs(d1 - minD2) < min(0.5, minMouse/80)) {
+              point(x, y);
+            }
+          }
+        }
+      }
     }
   }
   triangles = new Array(0);
@@ -373,7 +371,7 @@ function draw() {
   c5.update();
   c5.display();
   
-	fill(255, 255, 255);
+  fill(255, 255, 255);
   b1.update();
   b1.display();
   fill(0, 0, 0);
