@@ -86,10 +86,12 @@ function setup() {
   points.push(createVector(mouseX, mouseY));
   
   c1 = new Checkbox(700, 75, 20, 20);
+  c1.pressed = true;
   c2 = new Checkbox(700, 125, 20, 20);
   c3 = new Checkbox(700, 175, 20, 20);
   c4 = new Checkbox(700, 225, 20, 20);
   c5 = new Checkbox(700, 275, 20, 20);
+  c5.pressed = true;
   b1 = new Button(587.5, 325, 120, 40);
 }
 
@@ -104,7 +106,16 @@ function draw() {
     if (points.length > numberOfPointsAdded) {
       points.pop();
     }
-    points.push(createVector(mouseX, mouseY));
+    let cursorTooCloseToPoint = false;
+    for (let i = 0; i < points.length; i++) {
+      if (dist(points[i].x, points[i].y, mouseX, mouseY) < 2) {
+        cursorTooCloseToPoint = true;
+        break;
+      }
+    }
+    if (!cursorTooCloseToPoint) {
+      points.push(createVector(mouseX, mouseY));
+    }
   }
   else {
     while (points.length > numberOfPointsAdded) {
