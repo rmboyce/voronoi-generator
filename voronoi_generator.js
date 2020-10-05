@@ -76,22 +76,26 @@ var c1;
 var c2;
 var c3;
 var c4;
-var c5;
 var b1;
 var numberOfPointsAdded = 0;
 
 function setup() {
   createCanvas(750, 450);
   background(0,0,0);
+  points.push(createVector(100, 100));
+  points.push(createVector(500, 200));
+  points.push(createVector(300, 300));
+  numberOfPointsAdded += 3;
   points.push(createVector(mouseX, mouseY));
   
   c1 = new Checkbox(700, 75, 20, 20);
   c1.pressed = true;
+  voronoi = true;
   c2 = new Checkbox(700, 125, 20, 20);
   c3 = new Checkbox(700, 175, 20, 20);
   c4 = new Checkbox(700, 225, 20, 20);
-  c5 = new Checkbox(700, 275, 20, 20);
-  c5.pressed = true;
+  c4.pressed = true;
+  addPointOnCursor = true;
   b1 = new Button(587.5, 325, 120, 40);
 }
 
@@ -124,14 +128,18 @@ function draw() {
   }
   for (let i = 0; i < points.length; i++) {
     let v = points[i];
-    let n = pow(noise(i), 0.5)*2;
+    let nX = pow(noise(i), 0.5)*2;
+	let nY = pow(noise(2*i), 0.5)*2;
     //Turn noise off
     if (!noiseVal) {
-      n = 0;
+      nX = 0;
+	  nY = 0;
     }
-    let sign = random(0, 1) < 0.5 ? 1 : -1;
-    n *= sign;
-    points[i] = createVector(v.x + n, v.y + n);
+    let signX = random(0, 1) < 0.5 ? 1 : -1;
+	let signY = random(0, 1) < 0.5 ? 1 : -1;
+    nX *= signX;
+	nY *= signY;
+    points[i] = createVector(v.x + nX, v.y + nY);
     point(v.x, v.y);
   }
   
@@ -370,17 +378,10 @@ function draw() {
   
   fill(255, 255, 255);
   textSize(20);
-  text("Slow Draw?", 570, 240);
+  text("Cursor Point?", 570, 240);
   fill(0, 0, 0);
   c4.update();
   c4.display();
-  
-  fill(255, 255, 255);
-  textSize(20);
-  text("Cursor Point?", 570, 290);
-  fill(0, 0, 0);
-  c5.update();
-  c5.display();
   
   fill(255, 255, 255);
   b1.update();
@@ -449,13 +450,11 @@ function mouseReleased() {
   c2.tryClick();
   c3.tryClick();
   c4.tryClick();
-  c5.tryClick();
   
   voronoi = c1.pressed;
   circles = c2.pressed;
   noiseVal = c3.pressed;
-  fast = !c4.pressed;
-  addPointOnCursor = c5.pressed;
+  addPointOnCursor = c4.pressed;
   
   b1.tryClick();
   if (b1.pressed) {

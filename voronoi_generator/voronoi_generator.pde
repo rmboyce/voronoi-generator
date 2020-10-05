@@ -76,7 +76,6 @@ Checkbox c1;
 Checkbox c2;
 Checkbox c3;
 Checkbox c4;
-Checkbox c5;
 Button b1;
 int numberOfPointsAdded = 0;
 //boolean mouseWentOutOfBounds = false;
@@ -85,15 +84,20 @@ int numberOfPointsAdded = 0;
 void setup() {
   size(1500, 900);
   background(0,0,0);
+  points.add(new PVector(200, 200));
+  points.add(new PVector(1000, 400));
+  points.add(new PVector(600, 600));
+  numberOfPointsAdded += 3;
   points.add(new PVector(mouseX, mouseY));
   
   c1 = new Checkbox(1375, 150, 40, 40);
   c1.pressed = true;
+  voronoi = true;
   c2 = new Checkbox(1375, 250, 40, 40);
   c3 = new Checkbox(1375, 350, 40, 40);
   c4 = new Checkbox(1375, 450, 40, 40);
-  c5 = new Checkbox(1375, 550, 40, 40);
-  c5.pressed = true;
+  c4.pressed = true;
+  addPointOnCursor = true;
   b1 = new Button(1175, 650, 240, 80);
 }
 
@@ -126,14 +130,18 @@ void draw() {
   }
   for (int i = 0; i < points.size(); i++) {
     PVector v = points.get(i);
-    float n = pow(noise(i), 0.5)*2;
+    float nX = pow(noise(i), 0.5)*2;
+    float nY = pow(noise(2*i), 0.5)*2;
     //Turn noise off
     if (!noise) {
-      n = 0;
+      nX = 0;
+      nY = 0;
     }
-    float sign = random(0, 1) < 0.5 ? 1 : -1;
-    n *= sign;
-    points.set(i, new PVector(v.x + n, v.y + n));
+    float signX = random(0, 1) < 0.5 ? 1 : -1;
+    float signY = random(0, 1) < 0.5 ? 1 : -1;
+    nX *= signX;
+    nY *= signY;
+    points.set(i, new PVector(v.x + nX, v.y + nY));
     point(v.x, v.y);
   }
   
@@ -371,17 +379,10 @@ void draw() {
   
   fill(255, 255, 255);
   textSize(30);
-  text("Slow Draw?", 1175, 480);
+  text("Cursor Point?", 1175, 480);
   fill(0, 0, 0);
   c4.update();
   c4.display();
-  
-  fill(255, 255, 255);
-  textSize(30);
-  text("Cursor Point?", 1175, 580);
-  fill(0, 0, 0);
-  c5.update();
-  c5.display();
   
   b1.update();
   b1.display();
@@ -449,13 +450,11 @@ void mouseReleased() {
   c2.tryClick();
   c3.tryClick();
   c4.tryClick();
-  c5.tryClick();
   
   voronoi = c1.pressed;
   circles = c2.pressed;
   noise = c3.pressed;
-  fast = !c4.pressed;
-  addPointOnCursor = c5.pressed;
+  addPointOnCursor = c4.pressed;
   
   b1.tryClick();
   if (b1.pressed) {
