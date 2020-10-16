@@ -70,7 +70,9 @@ boolean circles = false;                                   // Turn circumcircles
 boolean voronoi = false;                                   // Switch between voronoi/delaunay
 boolean fast = true;                                       // Much faster if this is turned on
 boolean noise = false;                                     // Turn noise off/on
-boolean addPointOnCursor = true;
+boolean addPointOnCursor = true;                           // Draw point on the cursor
+boolean cursorTooCloseToPoint = false;                     // Is the cursor too close to a point?
+final int TOO_CLOSE = 2;
 
 Checkbox c1;
 Checkbox c2;
@@ -108,17 +110,12 @@ void draw() {
   stroke(255, 255, 255);
   strokeWeight(5);
   
+  cursorTooCloseToPoint = CheckTooClose();
   if (addPointOnCursor) {
     if (points.size() > numberOfPointsAdded) {
       points.remove(points.size() - 1);
     }
-    boolean cursorTooCloseToPoint = false;
-    for (int i = 0; i < points.size(); i++) {
-      if (dist(points.get(i).x, points.get(i).y, mouseX, mouseY) < 2) {
-        cursorTooCloseToPoint = true;
-        break;
-      }
-    }
+    cursorTooCloseToPoint = CheckTooClose();
     if (!cursorTooCloseToPoint) {
       points.add(new PVector(mouseX, mouseY));
     }
@@ -128,19 +125,19 @@ void draw() {
       points.remove(points.size() - 1);
     }
   }
+  
+  //Draw points
   for (int i = 0; i < points.size(); i++) {
     PVector v = points.get(i);
-    float nX = pow(noise(i), 0.5)*2;
-    float nY = pow(noise(2*i), 0.5)*2;
-    //Turn noise off
-    if (!noise) {
-      nX = 0;
-      nY = 0;
+    float nX = 0;
+    float nY = 0;
+    //Turn noise on
+    if (noise) {
+      nX = pow(noise(i), 0.5)*2;
+      nY = pow(noise(2*i), 0.5)*2;
+      nX *= random(0, 1) < 0.5 ? 1 : -1;
+      nY *= random(0, 1) < 0.5 ? 1 : -1;
     }
-    float signX = random(0, 1) < 0.5 ? 1 : -1;
-    float signY = random(0, 1) < 0.5 ? 1 : -1;
-    nX *= signX;
-    nY *= signY;
     points.set(i, new PVector(v.x + nX, v.y + nY));
     point(v.x, v.y);
   }
@@ -420,25 +417,21 @@ PVector ThirdPoint(PVector a, PVector b, PVector no) {
   return null;
 }
 
+//Check if the cursor is too close to a point
+boolean CheckTooClose() {
+  boolean tooClose = false;
+  for (int i = 0; i < points.size(); i++) {
+    if (dist(points.get(i).x, points.get(i).y, mouseX, mouseY) < TOO_CLOSE) {
+      tooClose = true;
+      break;
+    }
+  }
+  return tooClose;
+}
 //Callback when the user clicks at (x, y)
 void mousePressed() {
   if (mouseX < 1100 && mouseY < height) {
-    //Slow method blows up without this
-    if (!fast) {
-      boolean canAdd = true;
-      for(int i = 0; i < points.size() - 1; i++) {
-        PVector v = points.get(i);
-        if (dist(mouseX, mouseY, v.x, v.y) < 1) {
-          canAdd = false;
-          break;
-        }
-      }
-      if (canAdd) {
-        points.add(new PVector(mouseX, mouseY));
-        numberOfPointsAdded++;
-      }
-    }
-    else {
+    if (!cursorTooCloseToPoint) {
       points.add(new PVector(mouseX, mouseY));
       numberOfPointsAdded++;
     }
