@@ -72,24 +72,26 @@ boolean fast = true;                                       // Much faster if thi
 boolean noise = false;                                     // Turn noise off/on
 boolean addPointOnCursor = true;                           // Draw point on the cursor
 boolean cursorTooCloseToPoint = false;                     // Is the cursor too close to a point?
+int numberOfPointsAdded = 0;
 final int TOO_CLOSE = 2;
+final int INTERFACE_X = 1100;
 
 Checkbox c1;
 Checkbox c2;
 Checkbox c3;
 Checkbox c4;
 Button b1;
-int numberOfPointsAdded = 0;
-//boolean mouseWentOutOfBounds = false;
-//boolean mouseWentInBounds = false;
+Button b2;
 
 void setup() {
   size(1500, 900);
   background(0,0,0);
+  
   points.add(new PVector(200, 200));
   points.add(new PVector(1000, 400));
   points.add(new PVector(600, 600));
   numberOfPointsAdded += 3;
+  
   points.add(new PVector(mouseX, mouseY));
   
   c1 = new Checkbox(1375, 150, 40, 40);
@@ -100,7 +102,8 @@ void setup() {
   c4 = new Checkbox(1375, 450, 40, 40);
   c4.pressed = true;
   addPointOnCursor = true;
-  b1 = new Button(1175, 650, 240, 80);
+  b1 = new Button(1175, 550, 240, 80);
+  b2 = new Button(1175, 650, 240, 80);
 }
 
 void draw() {
@@ -351,41 +354,32 @@ void draw() {
   //Interface
   noStroke();
   fill(100, 100, 100);
-  rect(1100, 0, width, height);
+  rect(INTERFACE_X, 0, width, height);
   
+  TextCheckbox(c1, "Voronoi?");
+  TextCheckbox(c2, "Circles?");
+  TextCheckbox(c3, "Noise?");
+  TextCheckbox(c4, "Cursor Point?");
+  
+  TextButton(b1, "Point Circle");
+  TextButton(b2, "Clear Points");
+}
+
+void TextCheckbox(Checkbox c, String s) {
   fill(255, 255, 255);
   textSize(30);
-  text("Voronoi?", 1175, 180);
+  text(s, c.rectX - 200, c.rectY + 30);
   fill(0, 0, 0);
-  c1.update();
-  c1.display();
-  
-  fill(255, 255, 255);
-  textSize(30);
-  text("Circles?", 1175, 280);
-  fill(0, 0, 0);
-  c2.update();
-  c2.display();
-  
-  fill(255, 255, 255);
-  textSize(30);
-  text("Noise?", 1175, 380);
-  fill(0, 0, 0);
-  c3.update();
-  c3.display();
-  
-  fill(255, 255, 255);
-  textSize(30);
-  text("Cursor Point?", 1175, 480);
-  fill(0, 0, 0);
-  c4.update();
-  c4.display();
-  
-  b1.update();
-  b1.display();
+  c.update();
+  c.display();
+}
+
+void TextButton(Button b, String s) {
+  b.update();
+  b.display();
   fill(0, 0, 0);
   textSize(30);
-  text("Clear Points", 1205, 700);
+  text(s, b.rectX + 30, b.rectY + 50);
 }
 
 //Finds third point of a triangle in the delaunay triangulation, given two points and one point it will NOT return
@@ -428,9 +422,10 @@ boolean CheckTooClose() {
   }
   return tooClose;
 }
+
 //Callback when the user clicks at (x, y)
 void mousePressed() {
-  if (mouseX < 1100 && mouseY < height) {
+  if (mouseX < INTERFACE_X && mouseY < height) {
     if (!cursorTooCloseToPoint) {
       points.add(new PVector(mouseX, mouseY));
       numberOfPointsAdded++;
@@ -451,6 +446,17 @@ void mouseReleased() {
   
   b1.tryClick();
   if (b1.pressed) {
+    points.clear();
+    numberOfPointsAdded = 0;
+    for (int i = 0; i < 50; i++) {
+      float angle = (float)i * TWO_PI / 50f;
+      points.add(new PVector(INTERFACE_X/2 + 200*cos(angle) + random(0, 1), 
+                             height/2 + 200*sin(angle) + random(0, 1)));
+    }
+    numberOfPointsAdded += 50;
+  }
+  b2.tryClick();
+  if (b2.pressed) {
     points.clear();
     numberOfPointsAdded = 0;
   }

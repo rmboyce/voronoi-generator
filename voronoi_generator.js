@@ -72,22 +72,26 @@ var fast = true;                   // Much faster if this is turned on
 var noiseVal = false;              // Turn noise off/on
 var addPointOnCursor = true;       // Draw point on the cursor
 var cursorTooCloseToPoint = false; // Is the cursor too close to a point?
+var numberOfPointsAdded = 0;
 const TOO_CLOSE = 2;
+const INTERFACE_X = 550;
 
 var c1;
 var c2;
 var c3;
 var c4;
 var b1;
-var numberOfPointsAdded = 0;
+var b2;
 
 function setup() {
   createCanvas(750, 450);
   background(0,0,0);
+  
   points.push(createVector(100, 100));
   points.push(createVector(500, 200));
   points.push(createVector(300, 300));
   numberOfPointsAdded += 3;
+  
   points.push(createVector(mouseX, mouseY));
   
   c1 = new Checkbox(700, 75, 20, 20);
@@ -98,7 +102,8 @@ function setup() {
   c4 = new Checkbox(700, 225, 20, 20);
   c4.pressed = true;
   addPointOnCursor = true;
-  b1 = new Button(587.5, 325, 120, 40);
+  b1 = new Button(587.5, 275, 120, 40);
+  b2 = new Button(587.5, 325, 120, 40);
 }
 
 function draw() {
@@ -350,42 +355,33 @@ function draw() {
   //Interface
   noStroke();
   fill(100, 100, 100);
-  rect(550, 0, width, height);
+  rect(INTERFACE_X, 0, width, height);
   
+  TextCheckbox(c1, "Voronoi?");
+  TextCheckbox(c2, "Circles?");
+  TextCheckbox(c3, "Noise?");
+  TextCheckbox(c4, "Cursor Point?");
+  
+  TextButton(b1, "Point Circle");
+  TextButton(b2, "Clear Points");
+}
+
+function TextCheckbox(c, s) {
   fill(255, 255, 255);
   textSize(20);
-  text("Voronoi?", 570, 90);
+  text(s, c.rectX - 130, c.rectY + 15);
   fill(0, 0, 0);
-  c1.update();
-  c1.display();
-  
+  c.update();
+  c.display();
+}
+
+function TextButton(b, s) {
   fill(255, 255, 255);
-  textSize(20);
-  text("Circles?", 570, 140);
-  fill(0, 0, 0);
-  c2.update();
-  c2.display();
-  
-  fill(255, 255, 255);
-  textSize(20);
-  text("Noise?", 570, 190);
-  fill(0, 0, 0);
-  c3.update();
-  c3.display();
-  
-  fill(255, 255, 255);
-  textSize(20);
-  text("Cursor Point?", 570, 240);
-  fill(0, 0, 0);
-  c4.update();
-  c4.display();
-  
-  fill(255, 255, 255);
-  b1.update();
-  b1.display();
+  b.update();
+  b.display();
   fill(0, 0, 0);
   textSize(20);
-  text("Clear Points", 593, 350);
+  text(s, b.rectX + 5.5, b.rectY + 25);
 }
 
 //Finds third point of a triangle in the delaunay triangulation, given two points and one point it will NOT return
@@ -431,7 +427,7 @@ function CheckTooClose() {
 
 //Callback when the user clicks at (x, y)
 function mousePressed() {
-  if (mouseX < 550 && mouseY < height) {
+  if (mouseX < INTERFACE_X && mouseY < height) {
     if (!cursorTooCloseToPoint) {
       points.push(createVector(mouseX, mouseY));
       numberOfPointsAdded++;
@@ -452,6 +448,17 @@ function mouseReleased() {
   
   b1.tryClick();
   if (b1.pressed) {
+    points = new Array(0);
+    numberOfPointsAdded = 0;
+    for (let i = 0; i < 50; i++) {
+      let angle = i * TWO_PI / 50;
+      points.push(createVector(INTERFACE_X/2 + 100*cos(angle) + random(0, 0.5), 
+                               height/2 + 100*sin(angle) + random(0, 0.5)));
+    }
+    numberOfPointsAdded += 50;
+  }
+  b2.tryClick();
+  if (b2.pressed) {
     points = new Array(0);
     numberOfPointsAdded = 0;
   }
